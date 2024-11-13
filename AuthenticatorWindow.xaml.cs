@@ -13,7 +13,7 @@ namespace algoritm
     {
         private int userId;
         private bool isSetup;
-        private string secretKey; // Base32 encoded secret key
+        private string secretKey;
 
         public AuthenticatorWindow(int userId, bool isSetup)
         {
@@ -23,24 +23,20 @@ namespace algoritm
 
             if (isSetup)
             {
-                // Generate new secret key
                 var key = KeyGeneration.GenerateRandomKey(20);
                 secretKey = Base32Encoding.ToString(key);
 
-                // Generate QR code
                 string user = GetUserLogin(userId);
-                string issuer = "Алгоритмика"; // Replace with your app's name
+                string issuer = "Алгоритмика";
 
                 string otpauth = $"otpauth://totp/{issuer}:{user}?secret={secretKey}&issuer={issuer}&digits=6";
 
                 QRCodeGenerator qrGenerator = new QRCodeGenerator();
                 QRCodeData qrCodeData = qrGenerator.CreateQrCode(otpauth, QRCodeGenerator.ECCLevel.Q);
 
-                // Use WPF-compatible method to generate image
                 BitmapByteQRCode qrCode = new BitmapByteQRCode(qrCodeData);
                 byte[] qrCodeImageData = qrCode.GetGraphic(20);
 
-                // Convert byte array to BitmapImage
                 QRCodeImage.Source = LoadBitmapImage(qrCodeImageData);
                 QRCodeImage.Visibility = Visibility.Visible;
 
@@ -48,7 +44,6 @@ namespace algoritm
             }
             else
             {
-                // Get secret key from database
                 secretKey = GetUserAuthGoogle(userId);
                 InstructionText.Text = "Пожалуйста, введите код из Google Authenticator.";
             }
@@ -111,7 +106,6 @@ namespace algoritm
                 return;
             }
 
-            // Validate code
             var totp = new Totp(Base32Encoding.ToBytes(secretKey));
             bool isValid = totp.VerifyTotp(code, out long timeStepMatched, new VerificationWindow(2, 2));
 
@@ -119,7 +113,6 @@ namespace algoritm
             {
                 if (isSetup)
                 {
-                    // Save secret key to database
                     SaveAuthGoogle(userId, secretKey);
                 }
                 this.DialogResult = true;
