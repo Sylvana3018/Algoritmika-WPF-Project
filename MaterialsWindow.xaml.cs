@@ -30,7 +30,6 @@ namespace algoritm
         public ObservableCollection<CustomMaterial> AllCustomMaterials { get; set; }
         public ObservableCollection<CustomMaterial> DisplayedCustomMaterials { get; set; }
 
-        // Collection for Recent Materials
         public ObservableCollection<CustomMaterial> RecentMaterials { get; set; }
 
         private int _currentCustomPageIndex;
@@ -83,10 +82,8 @@ namespace algoritm
             UpdateDisplayedCustomMaterials();
             UpdateRecentMaterials();
 
-            // Start the subscription timer
             StartSubscriptionTimer();
 
-            // Play the background video
             SubscriptionBackgroundVideo.Loaded += (s, e) => SubscriptionBackgroundVideo.Play();
             SubscriptionBackgroundVideo.MediaEnded += SubscriptionBackgroundVideo_MediaEnded;
 
@@ -116,7 +113,6 @@ namespace algoritm
             {
                 SubscriptionTimeLeft = "Подписка истекла";
                 _subscriptionTimer.Stop();
-                // Optionally, disable certain features if needed
             }
         }
 
@@ -131,7 +127,6 @@ namespace algoritm
             using (OleDbConnection connection = DatabaseHelper.GetConnection())
             {
                 connection.Open();
-                // No changes needed here; 'Path_Material' contains the URL
                 string query = "SELECT Path_Material, Name, Description, Color, Icon FROM Materials";
                 OleDbCommand command = new OleDbCommand(query, connection);
                 using (OleDbDataReader reader = command.ExecuteReader())
@@ -140,7 +135,7 @@ namespace algoritm
                     {
                         AllMaterials.Add(new Material
                         {
-                            PathMaterial = reader["Path_Material"].ToString(), // This is the URL
+                            PathMaterial = reader["Path_Material"].ToString(),
                             Name = reader["Name"].ToString(),
                             Description = reader["Description"].ToString(),
                             Color = reader["Color"].ToString(),
@@ -438,7 +433,6 @@ namespace algoritm
             }
             UpdateDisplayedCustomMaterials();
 
-            // Refresh the DataContext to update bindings
             DataContext = null;
             DataContext = this;
         }
@@ -542,7 +536,6 @@ namespace algoritm
             _isMouseOverInteractiveElement = false;
         }
 
-        // Modified event handler for Material_Click
         private void Material_Click(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
@@ -566,7 +559,6 @@ namespace algoritm
             }
         }
 
-        // New method to open URL in default browser
         private void OpenURL(string url)
         {
             try
@@ -583,7 +575,6 @@ namespace algoritm
             }
         }
 
-        // Implement INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void OnPropertyChanged(string propertyName)
@@ -593,12 +584,11 @@ namespace algoritm
 
         public class Material
         {
-            public string PathMaterial { get; set; } // This contains the URL
+            public string PathMaterial { get; set; }
             public string Name { get; set; }
             public string Description { get; set; }
             public string Color { get; set; }
             public string Icon { get; set; }
-            // Removed the URL property since PathMaterial contains it
         }
 
         public class CustomMaterial

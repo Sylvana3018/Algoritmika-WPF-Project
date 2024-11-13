@@ -35,7 +35,6 @@ namespace algoritm
         private readonly string FtpPassword = "f1041431_PASS";
         private readonly string FtpUploadPath = "/domains/f1041431.xsph.ru/public_html/attendance.csv";
 
-        // Экземпляр Random и словарь для хранения цветов групп
         private readonly Random _random = new Random();
         private readonly Dictionary<string, System.Windows.Media.Color> _groupColors = new Dictionary<string, System.Windows.Media.Color>();
 
@@ -273,7 +272,6 @@ namespace algoritm
                 try
                 {
                     connection.Open();
-                    // Измененный SQL-запрос для получения посещаемости по группам и датам
                     string query = @"
                         SELECT 
                             G.Name AS GroupName,
@@ -310,18 +308,13 @@ namespace algoritm
                         }
                     }
 
-                    // Сортируем даты
                     var sortedDates = datesSet.ToList();
                     sortedDates.Sort();
 
-                    // Обновляем ось X
                     Dates = sortedDates.Select(d => d.ToString("dd.MM.yyyy")).ToArray();
 
-                    // Для каждой группы создаем LineSeries с уникальным цветом
                     foreach (var group in groupAttendance)
                     {
-                        // Проверяем, совпадает ли количество точек с количеством дат
-                        // Если нет, заполняем пропущенные даты значениями 0
                         List<double> attendanceValues = new List<double>();
 
                         attendanceValues.AddRange(group.Value);
@@ -331,7 +324,6 @@ namespace algoritm
                             attendanceValues.Add(0);
                         }
 
-                        // Генерируем уникальный случайный цвет для группы, если он ещё не назначен
                         if (!_groupColors.ContainsKey(group.Key))
                         {
                             _groupColors[group.Key] = GenerateRandomColor();
@@ -447,16 +439,12 @@ namespace algoritm
             {
                 var studentRecords = AllAttendanceRecords.Where(r => r.ID_Student == student.ID_Student);
 
-                // Total classes: count of Schedule records for the group
                 int totalClasses = GetTotalClassesForGroup(student.GroupName);
 
-                // Attended classes: count of records where AttendanceStatus is 'Присутствовал'
                 int attendedClasses = studentRecords.Count(r => r.AttendanceStatus == "Присутствовал");
 
-                // Missed classes
                 int missedClasses = totalClasses - attendedClasses;
 
-                // Attendance percentage
                 double percentage = totalClasses > 0 ? (double)attendedClasses / totalClasses * 100 : 0;
 
                 summaries.Add(new StudentAttendanceSummary
@@ -501,20 +489,16 @@ namespace algoritm
         {
             try
             {
-                // Получаем суммарные данные по посещаемости
                 List<StudentAttendanceSummary> summaries = GetAttendanceSummaries();
 
-                // Определяем путь к PDF-файлу (например, на рабочий стол)
                 string pdfFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "AttendanceReport.pdf");
 
                 // Экспортируем данные в CSV-файл
                 string csvFilePath = Path.Combine(Path.GetTempPath(), "attendance.csv");
                 using (StreamWriter sw = new StreamWriter(csvFilePath, false, System.Text.Encoding.UTF8))
                 {
-                    // Записываем заголовки
                     sw.WriteLine("Имя студента,Группа,Всего занятий,Посещено,Пропущено,Процент посещаемости");
 
-                    // Записываем данные по каждому студенту
                     foreach (var summary in summaries)
                     {
                         sw.WriteLine($"\"{summary.StudentName}\",\"{summary.GroupName}\",{summary.TotalClasses},{summary.AttendedClasses},{summary.MissedClasses},{summary.AttendancePercentage}%");
@@ -541,21 +525,17 @@ namespace algoritm
                 string qrCodePath = Path.Combine(Path.GetTempPath(), "QRCode.png");
                 qrCodeImage.Save(qrCodePath, System.Drawing.Imaging.ImageFormat.Png);
 
-                // Создаём PDF-документ
                 Document document = new Document();
                 Section section = document.AddSection();
                 section.PageSetup.Orientation = Orientation.Landscape; // Устанавливаем альбомную ориентацию
 
-                // Добавляем заголовок
                 Paragraph title = section.AddParagraph("Отчет по посещаемости", "Heading1");
                 title.Format.Alignment = ParagraphAlignment.Center;
                 title.Format.SpaceAfter = "1cm";
 
-                // Добавляем таблицу с суммарными данными
                 Table table = section.AddTable();
                 table.Borders.Width = 0.75;
 
-                // Определяем колонки
                 Column col1 = table.AddColumn("5cm"); // Имя студента
                 col1.Format.Alignment = ParagraphAlignment.Left;
 
@@ -574,7 +554,6 @@ namespace algoritm
                 Column col6 = table.AddColumn("4cm"); // Процент посещаемости
                 col6.Format.Alignment = ParagraphAlignment.Right;
 
-                // Добавляем заголовок таблицы
                 Row headerRow = table.AddRow();
                 headerRow.Shading.Color = Colors.LightGray;
                 headerRow.Cells[0].AddParagraph("Имя студента");
@@ -585,7 +564,6 @@ namespace algoritm
                 headerRow.Cells[5].AddParagraph("Процент посещаемости");
                 headerRow.Format.Font.Bold = true;
 
-                // Добавляем данные по каждому студенту
                 foreach (var summary in summaries)
                 {
                     Row row = table.AddRow();
@@ -597,10 +575,8 @@ namespace algoritm
                     row.Cells[5].AddParagraph($"{summary.AttendancePercentage}%");
                 }
 
-                // Добавляем небольшой отступ
                 section.AddParagraph("\n");
 
-                // Добавляем QR-код в PDF
                 if (File.Exists(qrCodePath))
                 {
                     Image qrImage = section.AddImage(qrCodePath);
@@ -611,7 +587,6 @@ namespace algoritm
                     qrImage.Top = ShapePosition.Top;
                 }
 
-                // Рендерим PDF-документ
                 PdfDocumentRenderer pdfRenderer = new PdfDocumentRenderer(unicode: true)
                 {
                     Document = document
@@ -670,17 +645,13 @@ namespace algoritm
         {
             try
             {
-                // Формируем полный FTP URL
                 string ftpUrl = $"ftp://{FtpHost}{remoteFilePath}";
 
-                // Создаём запрос
                 FtpWebRequest request = (FtpWebRequest)WebRequest.Create(ftpUrl);
                 request.Method = WebRequestMethods.Ftp.UploadFile;
 
-                // Указываем учетные данные
                 request.Credentials = new NetworkCredential(FtpUser, FtpPassword);
 
-                // Читаем содержимое файла
                 byte[] fileContents;
                 using (FileStream sourceStream = new FileStream(localFilePath, FileMode.Open))
                 {
@@ -688,19 +659,16 @@ namespace algoritm
                     sourceStream.Read(fileContents, 0, fileContents.Length);
                 }
 
-                // Записываем содержимое в запрос
                 request.ContentLength = fileContents.Length;
                 using (Stream requestStream = request.GetRequestStream())
                 {
                     requestStream.Write(fileContents, 0, fileContents.Length);
                 }
 
-                // Получаем ответ от сервера
                 using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
                 {
                     if (response.StatusCode == FtpStatusCode.ClosingData)
                     {
-                        // Успешно загружено
                         Console.WriteLine($"Upload File Complete, status {response.StatusDescription}");
                     }
                     else

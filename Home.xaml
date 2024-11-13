@@ -16,9 +16,8 @@
         Background="Transparent"
         MouseDown="Window_MouseDown"
         ResizeMode="CanResizeWithGrip">
-    <!-- Стиль всех элементов окна -->
+
     <Window.Resources>
-        <!-- Общие ресурсы анимации -->
         <Storyboard x:Key="MouseEnterAnimation">
             <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.1" Duration="0:0:0.2"/>
             <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.1" Duration="0:0:0.2"/>

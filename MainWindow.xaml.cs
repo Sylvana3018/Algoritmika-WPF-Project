@@ -19,7 +19,6 @@ namespace algoritm
 
             this.Cursor = Fiery;
 
-            // Начать воспроизведение видео при загрузке окна
             BackgroundVideo.Loaded += (s, e) => BackgroundVideo.Play();
             BackgroundVideo.MediaEnded += BackgroundVideo_MediaEnded;
         }
@@ -33,22 +32,19 @@ namespace algoritm
 
 
 
-        // Остальной код без изменений
         private void Window_MouseMove(object sender, MouseEventArgs e)
         {
             Point cursorPosition = e.GetPosition(this);
             double widthFactor = (cursorPosition.X - ActualWidth / 2) / ActualWidth;
             double heightFactor = (cursorPosition.Y - ActualHeight / 2) / ActualHeight;
 
-            // Ограничение движения до небольших значений
-            double offsetX = widthFactor * 10;  // Ограничение горизонтального движения
-            double offsetY = heightFactor * 10; // Ограничение вертикального движения
+            double offsetX = widthFactor * 10;
+            double offsetY = heightFactor * 10;
 
-            // Применение трансформаций к обоим текстовым блокам
             WelcomeTextTransform.X = offsetX;
             WelcomeTextTransform.Y = offsetY;
 
-            WelcomeText2Transform.X = -offsetX; // Противоположное направление для "Пожаловать"
+            WelcomeText2Transform.X = -offsetX;
             WelcomeText2Transform.Y = -offsetY;
         }
 
@@ -83,42 +79,35 @@ namespace algoritm
 
                 string userFullName = GetUserFullName(username);
 
-                // Проверка настройки Google Authenticator
                 string authGoogle = GetUserAuthGoogle(userId);
 
                 if (string.IsNullOrEmpty(authGoogle))
                 {
-                    // Открыть окно настройки Authenticator
                     AuthenticatorWindow authWindow = new AuthenticatorWindow(userId, isSetup: true);
                     bool? result = authWindow.ShowDialog();
                     if (result == true)
                     {
-                        // Настройка успешна
                         MessageBox.Show("Успешная авторизация!");
                         Home dashboardWindow = new Home(userFullName, userId);
                         OpenWindowWithAnimation(dashboardWindow);
                     }
                     else
                     {
-                        // Настройка не завершена
                         MessageBox.Show("Настройка двухфакторной аутентификации не завершена.");
                     }
                 }
                 else
                 {
-                    // Открыть окно для проверки кода
                     AuthenticatorWindow authWindow = new AuthenticatorWindow(userId, isSetup: false);
                     bool? result = authWindow.ShowDialog();
                     if (result == true)
                     {
-                        // Код подтвержден
                         MessageBox.Show("Успешная авторизация!");
                         Home dashboardWindow = new Home(userFullName, userId);
                         OpenWindowWithAnimation(dashboardWindow);
                     }
                     else
                     {
-                        // Проверка не удалась
                         MessageBox.Show("Неверный код двухфакторной аутентификации.");
                     }
                 }
@@ -171,7 +160,7 @@ namespace algoritm
                 command.Parameters.AddWithValue("Login", username);
                 command.Parameters.AddWithValue("Password", password);
 
-                command.CommandTimeout = 30; // Установка времени ожидания команды
+                command.CommandTimeout = 30;
 
                 object result = command.ExecuteScalar();
                 if (result != null)

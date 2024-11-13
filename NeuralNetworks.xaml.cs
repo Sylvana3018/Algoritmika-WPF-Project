@@ -17,7 +17,7 @@ namespace algoritm
     public class ChatGPTClient
     {
         private static readonly HttpClient client = new HttpClient();
-        private readonly string apiUrl = "http://127.0.0.1:5000/chat"; // Python backend URL
+        private readonly string apiUrl = "http://127.0.0.1:5000/chat"; // Python
 
         public async Task<string> SendMessageAsync(string userMessage, double temperature, int maxTokens, string model)
         {
@@ -36,7 +36,7 @@ namespace algoritm
             {
                 HttpResponseMessage response = await client.PostAsync(apiUrl, content);
                 string responseContent = await response.Content.ReadAsStringAsync();
-                Console.WriteLine("Response content: " + responseContent);  // Log in the console
+                Console.WriteLine("Response content: " + responseContent);
 
                 dynamic responseJson = JsonConvert.DeserializeObject(responseContent);
                 if (responseJson != null && responseJson.reply != null)
@@ -101,7 +101,6 @@ namespace algoritm
             StartSubscriptionTimer();
         }
 
-        // User parameters
         public string UserName { get; set; }
         public int UserId { get; set; }
 
@@ -128,7 +127,6 @@ namespace algoritm
             set
             {
                 _subscriptionTimeLeft = value;
-                // Update the timer text block
                 SubscriptionTimerTextBlock.Text = _subscriptionTimeLeft;
             }
         }
@@ -226,7 +224,6 @@ namespace algoritm
             this.BeginAnimation(UIElement.OpacityProperty, animation);
         }
 
-        // Send message button click handler
         private async void SendMessageButton_Click(object sender, RoutedEventArgs e)
         {
             if (isProcessing) return;
@@ -234,33 +231,27 @@ namespace algoritm
             string message = ChatInputTextBox.Text;
             if (!string.IsNullOrEmpty(message))
             {
-                // Disable input while processing
                 isProcessing = true;
                 ChatInputTextBox.IsEnabled = false;
 
                 AddMessageToChat(message, true);
                 ChatInputTextBox.Clear();
 
-                // Show the thinking animation
                 ThinkingTextBlock.Visibility = Visibility.Visible;
                 var thinkingStoryboard = (Storyboard)this.Resources["ThinkingAnimation"];
                 thinkingStoryboard.Begin();
 
-                // Fetch settings from UI controls
                 double temperature = TemperatureSlider.Value;
                 int maxTokens = int.Parse(MaxTokensTextBox.Text);
                 string selectedModel = ((ComboBoxItem)ModelComboBox.SelectedItem).Content.ToString();
 
-                // Send the message to ChatGPT
                 string response = await chatClient.SendMessageAsync(message, temperature, maxTokens, selectedModel);
 
-                // Hide the thinking animation
                 thinkingStoryboard.Stop();
                 ThinkingTextBlock.Visibility = Visibility.Collapsed;
 
                 AddMessageToChat(response, false);
 
-                // Re-enable input
                 isProcessing = false;
                 ChatInputTextBox.IsEnabled = true;
             }
@@ -270,7 +261,6 @@ namespace algoritm
         {
             var parts = ParseMessage(message);
 
-            // Get resources for colors and styles
             Brush backgroundColor = isUser ? (Brush)FindResource("UserMessageBackground") : (Brush)FindResource("BotMessageBackground");
             Brush foregroundColor = isUser ? (Brush)FindResource("UserMessageForeground") : (Brush)FindResource("BotMessageForeground");
             Style bubbleStyle = isUser ? (Style)FindResource("UserMessageBubbleStyle") : (Style)FindResource("BotMessageBubbleStyle");
@@ -316,7 +306,6 @@ namespace algoritm
                     }
                     else
                     {
-                        // Start of code block
                         if (sb.Length > 0)
                         {
                             parts.Add(new MessagePart
@@ -347,7 +336,6 @@ namespace algoritm
             return parts;
         }
 
-        // Window movement
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
@@ -393,7 +381,6 @@ namespace algoritm
 
         private void FrequencyPenaltySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            // Handle frequency penalty slider value changed if needed
         }
     }
 }

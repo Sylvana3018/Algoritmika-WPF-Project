@@ -100,12 +100,10 @@ namespace algoritm
 
         private void EditButton_Click(object sender, RoutedEventArgs e)
         {
-            // Реализуйте редактирование студента
         }
 
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
-            // Реализуйте добавление студента
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
