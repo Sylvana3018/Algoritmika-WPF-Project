@@ -1,0 +1,683 @@
+﻿<Window x:Class="algoritm.Home"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
+        xmlns:local="clr-namespace:algoritm"
+        mc:Ignorable="d"
+        Title="Dashboard"
+        MinHeight="800" MinWidth="1400"
+        MaxHeight="900" MaxWidth="1400"
+        d:DesignHeight="800" d:DesignWidth="1300"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        MouseDown="Window_MouseDown"
+        ResizeMode="CanResizeWithGrip">
+    <!-- Стиль всех элементов окна -->
+    <Window.Resources>
+        <!-- Общие ресурсы анимации -->
+        <Storyboard x:Key="MouseEnterAnimation">
+            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.1" Duration="0:0:0.2"/>
+            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.1" Duration="0:0:0.2"/>
+            <ColorAnimation Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" To="White" Duration="0:0:0.2"/>
+        </Storyboard>
+        <Storyboard x:Key="MouseLeaveAnimation">
+            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.0" Duration="0:0:0.2"/>
+            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.0" Duration="0:0:0.2"/>
+            <ColorAnimation Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" To="Transparent" Duration="0:0:0.2"/>
+        </Storyboard>
+
+        <Storyboard x:Key="MouseEnterColorAnimation">
+            <ColorAnimation Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)"
+                            To="#eae8eb" Duration="0:0:0.2"/>
+        </Storyboard>
+        <Storyboard x:Key="MouseLeaveColorAnimation">
+            <ColorAnimation Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)"
+                            To="Transparent" Duration="0:0:0.2"/>
+        </Storyboard>
+        <Storyboard x:Key="EditButtonHoverAnimation">
+            <ColorAnimation Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)" To="#161928" Duration="0:0:0.3"/>
+            <ColorAnimation Storyboard.TargetProperty="(Button.Foreground).(SolidColorBrush.Color)" To="White" Duration="0:0:0.3"/>
+        </Storyboard>
+        <Storyboard x:Key="EditButtonUnhoverAnimation">
+            <ColorAnimation Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)" To="#fce9f2" Duration="0:0:0.3"/>
+            <ColorAnimation Storyboard.TargetProperty="(Button.Foreground).(SolidColorBrush.Color)" To="#ca8595" Duration="0:0:0.3"/>
+        </Storyboard>
+
+        <Style x:Key="EditButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#fce9f2"/>
+            <Setter Property="Foreground" Value="#ca8595"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Width" Value="160"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="10">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <materialDesign:PackIcon x:Name="icon" Kind="Edit" Width="20" Height="20" Foreground="{TemplateBinding Foreground}" Margin="10,0,7,0"/>
+                                <TextBlock x:Name="text" Text="Редактировать" FontWeight="DemiBold" Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center" FontSize="16"/>
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard Storyboard="{StaticResource EditButtonHoverAnimation}"/>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard Storyboard="{StaticResource EditButtonUnhoverAnimation}"/>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetProperty="(Button.BorderBrush).(SolidColorBrush.Color)" To="#2191ee" Duration="0:0:0.3"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetProperty="(Button.BorderBrush).(SolidColorBrush.Color)" To="Transparent" Duration="0:0:0.3"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="NavigationButtonStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Ellipse x:Name="ellipse" Width="30" Height="30" Fill="Transparent" Stroke="Transparent" StrokeThickness="2"/>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="ellipse" Storyboard.TargetProperty="(Shape.Stroke).(SolidColorBrush.Color)" To="#2496f5" Duration="0:0:0.3"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="ellipse" Storyboard.TargetProperty="(Shape.Stroke).(SolidColorBrush.Color)" To="Transparent" Duration="0:0:0.3"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
+
+        <!-- Стиль кнопки для иконок -->
+        <Style x:Key="IconButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="10">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground" Value="Black"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard Storyboard="{StaticResource MouseEnterAnimation}"/>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard Storyboard="{StaticResource MouseLeaveAnimation}"/>
+                    </Trigger.ExitActions>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+
+        <Style x:Key="RoundButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Background" Value="#1C232E"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Ellipse x:Name="ellipse" Fill="{TemplateBinding Background}" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="2"/>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="ellipse" Storyboard.TargetProperty="(Ellipse.Stroke).(SolidColorBrush.Color)" To="#1C232E" Duration="0:0:0.2"/>
+                                            <ColorAnimation Storyboard.TargetName="ellipse" Storyboard.TargetProperty="(Ellipse.Fill).(SolidColorBrush.Color)" To="Transparent" Duration="0:0:0.2"/>
+                                            <ColorAnimation Storyboard.TargetProperty="(Button.Foreground).(SolidColorBrush.Color)" To="#1C232E" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="ellipse" Storyboard.TargetProperty="(Ellipse.Stroke).(SolidColorBrush.Color)" To="Transparent" Duration="0:0:0.2"/>
+                                            <ColorAnimation Storyboard.TargetName="ellipse" Storyboard.TargetProperty="(Ellipse.Fill).(SolidColorBrush.Color)" To="#1C232E" Duration="0:0:0.2"/>
+                                            <ColorAnimation Storyboard.TargetProperty="(Button.Foreground).(SolidColorBrush.Color)" To="White" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CloseButtonStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Ellipse x:Name="ellipse" Fill="#FF6347" Width="30" Height="30" Stroke="Transparent" StrokeThickness="2"/>
+                            <TextBlock x:Name="text" Text="X" Foreground="Transparent" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="ellipse" Storyboard.TargetProperty="(Ellipse.Stroke).(SolidColorBrush.Color)" To="#1C232E" Duration="0:0:0.2"/>
+                                            <ColorAnimation Storyboard.TargetName="text" Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)" To="White" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="ellipse" Storyboard.TargetProperty="(Ellipse.Stroke).(SolidColorBrush.Color)" To="Transparent" Duration="0:0:0.2"/>
+                                            <ColorAnimation Storyboard.TargetName="text" Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)" To="Transparent" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ellipse" Property="Fill" Value="#FF4500"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="Height" Value="30"/>
+        </Style>
+
+        <Style x:Key="MenuButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="0" CornerRadius="5">
+                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard Storyboard="{StaticResource MouseEnterColorAnimation}"/>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard Storyboard="{StaticResource MouseLeaveColorAnimation}"/>
+                    </Trigger.ExitActions>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Storyboard x:Key="ExportButtonHoverAnimation">
+            <ColorAnimation Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)" To="#161928" Duration="0:0:0.3"/>
+            <ColorAnimation Storyboard.TargetProperty="(Button.Foreground).(SolidColorBrush.Color)" To="White" Duration="0:0:0.3"/>
+        </Storyboard>
+        <Storyboard x:Key="ExportButtonUnhoverAnimation">
+            <ColorAnimation Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)" To="#edf1fb" Duration="0:0:0.3"/>
+            <ColorAnimation Storyboard.TargetProperty="(Button.Foreground).(SolidColorBrush.Color)" To="#ca8595" Duration="0:0:0.3"/>
+        </Storyboard>
+
+        <Style x:Key="ExportButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#edf1fb"/>
+            <Setter Property="Foreground" Value="#30323b"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Width" Value="114"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="10">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <materialDesign:PackIcon x:Name="icon" Kind="FileExport" Width="20" Height="20" Foreground="{TemplateBinding Foreground}" Margin="10,0,10,0"/>
+                                <TextBlock x:Name="text" Text="Экспорт" Foreground="{TemplateBinding Foreground}" FontWeight="DemiBold" VerticalAlignment="Center" FontSize="16"/>
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard Storyboard="{StaticResource ExportButtonHoverAnimation}"/>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard Storyboard="{StaticResource ExportButtonUnhoverAnimation}"/>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Storyboard x:Key="RectangleMouseEnterAnimation">
+            <ColorAnimation Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                        To="#161928" Duration="0:0:0.2"/>
+        </Storyboard>
+        <Storyboard x:Key="RectangleMouseLeaveAnimation">
+            <ColorAnimation Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                        To="Transparent" Duration="0:0:0.2"/>
+        </Storyboard>
+
+    </Window.Resources>
+
+    <!-- Главная панель -->
+    <Border Background="#F8F6FC" CornerRadius="15" BorderBrush="#7F8C8D" BorderThickness="1">
+        <Border.Effect>
+            <DropShadowEffect Color="#D1E1E7" BlurRadius="10" ShadowDepth="0" Opacity="0.5"/>
+        </Border.Effect>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="200"/>
+            </Grid.ColumnDefinitions>
+            <Border Grid.Column="0" CornerRadius="15,0,0,15" Background="White" Grid.ColumnSpan="2" Margin="0,0,969,0">
+                <Grid Margin="19,20,19,0" Width="182">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" VerticalAlignment="Top">
+                        <Image Source="al_logo.png" Width="212" Height="70" Margin="0,10,0,20"/>
+                        <Button Style="{StaticResource MenuButtonStyle}" Opacity="1" Margin="-25,10,-23,0">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Height="28">
+                                <materialDesign:PackIcon Kind="Home" Width="22" Margin="25,3,0,0" Height="22" Foreground="#161928"/>
+                                <TextBlock VerticalAlignment="Center" Margin="20,0,0,0" Foreground="#161928" FontWeight="DemiBold" FontSize="16">
+                        <Run Text="Главная панель"/>
+                                </TextBlock>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource MenuButtonStyle}" Click="OpenMapWindow" Margin="-25,10,-23,0">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Height="28">
+                                <materialDesign:PackIcon Kind="Person" Margin="25,3,0,0" Width="22" Height="22" Foreground="#161928"/>
+                                <TextBlock VerticalAlignment="Center" Margin="20,0,0,0" Foreground="#161928" FontWeight="DemiBold" FontSize="16">Обучающиеся</TextBlock>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="MaterialsButton" Style="{StaticResource MenuButtonStyle}" Click="OpenMaterialsWindow" Margin="-25,10,-23,0">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Height="28">
+                                <materialDesign:PackIcon Kind="Material" Margin="25,3,0,0" Width="22" Height="22" Foreground="#161928"/>
+                                <TextBlock VerticalAlignment="Center" Margin="20,0,0,0" Foreground="#161928" FontWeight="DemiBold" FontSize="16">Материалы</TextBlock>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource MenuButtonStyle}" Click="OpenDataWindow" Margin="-25,10,-23,0">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Height="28">
+                                <materialDesign:PackIcon Kind="FileDocumentCheck" Margin="25,3,0,0" Width="22" Height="22" Foreground="#161928"/>
+                                <TextBlock VerticalAlignment="Center" Margin="20,0,0,0" Foreground="#161928" FontWeight="DemiBold" FontSize="16">Посещаемость</TextBlock>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource MenuButtonStyle}" Margin="-25,10,-23,0" Click="OpenNeuralNetworksWindow">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Height="28">
+                                <materialDesign:PackIcon Kind="Brain" Width="22" Margin="25,3,0,0" Height="22" Foreground="#161928"/>
+                                <TextBlock VerticalAlignment="Center" Margin="20,0,0,0" Foreground="#161928" FontWeight="DemiBold" FontSize="16">
+            <Run Text="Нейросети"/>
+                                </TextBlock>
+                            </StackPanel>
+                        </Button>
+
+                        <!--Visibility="Collapsed"-->
+
+
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" VerticalAlignment="Bottom" Margin="0,0,0,40">
+                        <!-- Подписка (Alpha) -->
+                        <TextBlock Text="Окончание подписки:" 
+               Foreground="#161928" 
+               FontWeight="DemiBold" 
+               FontSize="15" 
+               HorizontalAlignment="Center" 
+               Margin="0,0,0,5"/>
+
+                        <Border CornerRadius="26" Width="180" Height="80">
+                            <Border.Clip>
+                                <RectangleGeometry Rect="0,0,180,80" RadiusX="10" RadiusY="10"/>
+                            </Border.Clip>
+                            <Grid ClipToBounds="True">
+                                <MediaElement x:Name="SubscriptionBackgroundVideo" 
+                          Source="liquid3.mp4" 
+                          Stretch="UniformToFill" 
+                          LoadedBehavior="Manual" 
+                          UnloadedBehavior="Stop" 
+                          IsMuted="True" 
+                          MediaEnded="SubscriptionBackgroundVideo_MediaEnded"/>
+                                <TextBlock x:Name="SubscriptionTimerTextBlock" 
+                       Text="{Binding SubscriptionTimeLeft}" 
+                       Foreground="White" 
+                       FontWeight="DemiBold"
+                       FontSize="18" 
+                       HorizontalAlignment="Center" 
+                       VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+
+
+
+
+                </Grid>
+            </Border>
+
+            <Grid Grid.Column="1" Margin="129,10,118,10">
+                <Border CornerRadius="25" Margin="23,107,23,524" Padding="20">
+                    <Border.Background>
+                        <ImageBrush ImageSource="5528488-01_blur.jpg" Stretch="UniformToFill"/>
+                    </Border.Background>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock FontWeight="Bold" FontSize="22" Margin="23,0,0,10" Foreground="White">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="Добро пожаловать, {0}!">
+                                        <Binding Path="UserName"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+
+                            <TextBlock Text="{Binding ConnectedGroupsText}" 
+           Foreground="White" FontSize="20" FontWeight="DemiBold" 
+           TextWrapping="Wrap" MaxWidth="400" Margin="0,0,120,0"/>
+
+                        </StackPanel>
+                        <Image Grid.Column="0" Source="Images/f15e07e.png" Width="346" 
+               HorizontalAlignment="Right" Grid.ColumnSpan="2" 
+               Margin="0,-96,-11,-20"/>
+                    </Grid>
+                </Border>
+
+                <!-- Верхний заголовок и дата в реальном времени -->
+                <Grid VerticalAlignment="Top" Margin="0,10,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Главная панель" Foreground="#262B40" FontWeight="Bold" FontSize="25" Margin="20,0,0,0" Height="33" VerticalAlignment="Bottom"/>
+                    <TextBlock Grid.Column="1" Text="{Binding CurrentDate, StringFormat='dd MMMM yyyy'}" Opacity="0.5" FontWeight="DemiBold" FontSize="16" Margin="0,0,20,0"/>
+                </Grid>
+
+                <Grid Margin="23,10,23,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.Column="0" Background="White" CornerRadius="25" Margin="0,90,130,0" Height="300">
+                        <Grid Margin="20">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Header Text with Export Button -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Grid.Row="0">
+                                <TextBlock Text="Посещаемость" FontWeight="Bold" FontSize="18" Margin="0,0,0,10" />
+                                <Button Style="{StaticResource ExportButtonStyle}" Margin="115,0,0,0" Click="ExportButton_Click"/>
+                            </StackPanel>
+
+                            <!-- Раздел с посещаемостью -->
+                            <ItemsControl Grid.Row="1" ItemsSource="{Binding DisplayedResults}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Vertical"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,20">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Orientation="Horizontal" Grid.Column="0" Margin="0,0,10,0">
+                                                <TextBlock Text="{Binding GroupName}" FontWeight="Bold" />
+                                                <TextBlock Text=" - " />
+                                                <TextBlock Text="{Binding Description}" Foreground="Gray" />
+                                            </StackPanel>
+                                            <Border Background="LightGray" Height="5" Width="100" VerticalAlignment="Center" Margin="10,0,0,0" Grid.Column="1">
+                                                <Border Background="{Binding AttendancePercentage, Converter={StaticResource AttendanceToColorConverter}}" 
+                                    Height="5" 
+                                    Width="{Binding AttendancePercentage, Converter={StaticResource PercentageToFixedWidthConverter}}" 
+                                    HorizontalAlignment="Left"/>
+                                            </Border>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <Grid Grid.Row="2" Margin="0,10,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Button Style="{StaticResource NavigationButtonStyle}" Content="&#x276E;" FontWeight="ExtraBlack" FontSize="15" Click="PrevResultPage_Click" Grid.Column="0" HorizontalAlignment="Left"/>
+                                <Button Style="{StaticResource NavigationButtonStyle}" Content="&#x276F;" FontWeight="ExtraBlack" FontSize="15" Click="NextResultPage_Click" Grid.Column="1" HorizontalAlignment="Right"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+
+
+
+
+
+
+
+                    <Border Background="White" CornerRadius="25" Margin="456,274,0,184" Height="300" Grid.ColumnSpan="2">
+                        <Grid Margin="20">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Комментарии:" FontWeight="Bold" FontSize="18" Margin="0,0,0,20" Grid.Row="0"/>
+
+                            <!-- Раздел с комментариями -->
+                            <ItemsControl ItemsSource="{Binding DisplayedComments}" Grid.Row="1">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <TextBlock>
+                                                <Run Text="{Binding FullName}" FontSize="14" FontWeight="Bold" />
+                                                <Run Text=" - " />
+                                                <Run Text="{Binding Role}" FontSize="14" Foreground="Gray" />
+                                            </TextBlock>
+                                            <TextBlock Text="{Binding Comment}" FontSize="14" TextWrapping="Wrap" Margin="0,10,0,10"/>
+                                            <Separator Margin="0,10,0,10" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <Grid Grid.Row="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Button Style="{StaticResource NavigationButtonStyle}" Content="&#x276E;" FontWeight="ExtraBlack" FontSize="15" Click="PrevComment_Click" Grid.Column="0" HorizontalAlignment="Left"/>
+                                <Button Style="{StaticResource NavigationButtonStyle}" Content="&#x276F;" FontWeight="ExtraBlack" FontSize="15" Click="NextComment_Click" Grid.Column="1" HorizontalAlignment="Right"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+
+                </Grid>
+
+                <StackPanel VerticalAlignment="Bottom" Margin="23,0,23,15">
+
+
+
+                    <TextBlock Text="Доступные курсы:" FontWeight="Bold" FontSize="18" Foreground="#262B40" Margin="37,0,0,30" />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button Style="{StaticResource NavigationButtonStyle}" Content="&#x276E;" Click="PrevPage_Click" Grid.Column="0" />
+
+                        <ItemsControl Grid.Column="1" ItemsSource="{Binding DisplayedItems}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="3"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Height="100" Background="{Binding Background}" CornerRadius="25" Margin="10,0,10,0" BorderBrush="Transparent" BorderThickness="2">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Trigger.EnterActions>
+                                                            <BeginStoryboard Storyboard="{StaticResource RectangleMouseEnterAnimation}"/>
+                                                        </Trigger.EnterActions>
+                                                        <Trigger.ExitActions>
+                                                            <BeginStoryboard Storyboard="{StaticResource RectangleMouseLeaveAnimation}"/>
+                                                        </Trigger.ExitActions>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <materialDesign:PackIcon Kind="{Binding Icon}" Width="30" Height="30" Margin="30,5,10,0" Foreground="White"/>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding SmallText}" Foreground="White" FontSize="14" Margin="10,0,0,5"/>
+                                                <TextBlock Text="{Binding BoldText}" Foreground="White" FontWeight="Bold" FontSize="18" Margin="10,0,0,0"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+
+                        </ItemsControl>
+
+                        <Button Style="{StaticResource NavigationButtonStyle}" Content="&#x276F;" Click="NextPage_Click" Grid.Column="2" />
+                    </Grid>
+                </StackPanel>
+            </Grid>
+            <Border Grid.Column="1" CornerRadius="0,15,15,0" Background="White" Margin="980,0,0,0" Grid.ColumnSpan="2">
+                <Grid>
+                    <Button Style="{StaticResource CloseButtonStyle}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10" Click="CloseButton_Click"/>
+
+                    <StackPanel Margin="20" VerticalAlignment="Top">
+                        <TextBlock Text="Ваш профиль" FontWeight="Bold" FontSize="18" Margin="0,0,0,20" />
+
+                        <Border Width="150" Height="150" Background="Gray" CornerRadius="75" HorizontalAlignment="Center" Margin="0,30,0,0">
+                            <Image Source="{Binding AvatarPath}" Stretch="UniformToFill" ClipToBounds="True" Width="150" Height="150">
+                                <Image.Clip>
+                                    <EllipseGeometry Center="75,75" RadiusX="75" RadiusY="75"/>
+                                </Image.Clip>
+                            </Image>
+                        </Border>
+
+                        <!-- User Information -->
+                        <Grid HorizontalAlignment="Center" Margin="0,10,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="{Binding UserFullName}" FontWeight="Bold" FontSize="16" HorizontalAlignment="Center" Grid.Row="0" Margin="0,0,0,5"/>
+
+                            <TextBlock Text="{Binding UserRole}" FontSize="14" Foreground="Gray" HorizontalAlignment="Center" Width="100" Grid.Row="1" TextWrapping="Wrap" Margin="0,0,0,0"/>
+                        </Grid>
+
+                        <Button Style="{StaticResource EditButtonStyle}" Margin="0,30,0,0" Click="EditButton_Click"/>
+
+                        <Border Background="#edf1fb" CornerRadius="10" Margin="0,30,0,0" Padding="10" Height="150">
+                            <StackPanel VerticalAlignment="Top">
+                                <TextBlock Text="Комментарий" FontWeight="Bold" FontSize="16" Foreground="Black" Margin="0,0,0,5"/>
+                                <TextBlock Text="{Binding UserComment}" FontSize="14" Foreground="Black" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Кнопка для открытия веб-сайта -->
+                        <Button Style="{StaticResource ExportButtonStyle}" Content="Открыть сайт" Click="OpenWebsite_Click" Margin="0,10,0,0"/>
+
+                        <!-- Кнопка для обновления комментариев -->
+                        <Button Style="{StaticResource ExportButtonStyle}" Content="Обновить комментарии" Click="UpdateComments_Click" Margin="0,10,0,0"/>
+
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+
+
+
+
+
+
+
+
+        </Grid>
+    </Border>
+
+</Window>

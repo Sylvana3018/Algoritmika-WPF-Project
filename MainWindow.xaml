@@ -1,0 +1,279 @@
+﻿<Window x:Class="algoritm.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:algoritm"
+        mc:Ignorable="d"
+        Title="Login Window" Height="730" Width="1250" MinHeight="700" MinWidth="1150" MaxHeight="900" MaxWidth="1400"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        MouseDown="Window_MouseDown" ResizeMode="CanResizeWithGrip" MouseMove="Window_MouseMove">
+    <Window.Resources>
+
+        <!-- Placeholder TextBox Style -->
+        <Style x:Key="PlaceholderTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Background" Value="#ffffff"/>
+            <Setter Property="Padding" Value="10,0,10,0"/>
+            <Setter Property="BorderBrush" Value="#1A1B1D"/>
+            <Setter Property="Opacity" Value="0.5"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Grid>
+                            <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="5" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                                <ScrollViewer x:Name="PART_ContentHost" Background="Transparent" BorderThickness="0" />
+                            </Border>
+                            <TextBlock x:Name="Placeholder" Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Tag}" 
+                               Foreground="Gray" Margin="0,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False" Visibility="Collapsed"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Text" Value="">
+                                <Setter TargetName="Placeholder" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                            <EventTrigger RoutedEvent="UIElement.GotFocus">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" To="#0066ff" Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="UIElement.LostFocus">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" To="#1A1B1D" Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Rounded PasswordBox Style -->
+        <Style x:Key="RoundedPasswordBoxStyle" TargetType="PasswordBox">
+            <Setter Property="Background" Value="#ffffff"/>
+
+            <Setter Property="Padding" Value="10,0,10,0"/>
+            <Setter Property="BorderBrush" Value="#1A1B1D"/>
+            <Setter Property="Opacity" Value="0.5"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="PasswordBox">
+                        <Grid>
+                            <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="5" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                                <ScrollViewer x:Name="PART_ContentHost" Background="Transparent" BorderThickness="0" />
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <EventTrigger RoutedEvent="UIElement.GotFocus">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" To="#0066ff" Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="UIElement.LostFocus">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" To="#1A1B1D" Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Rounded Button Style with Animation -->
+        <Style x:Key="RoundedButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#154AEE"/>
+            <Setter Property="Foreground" Value="#ffffff"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="10" BorderThickness="0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.1" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.1" Duration="0:0:0.2"/>
+                                            <ColorAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="#1C232E" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1" Duration="0:0:0.2"/>
+                                            <ColorAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="#0066ff" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Close Button Style with Animation -->
+        <Style x:Key="CloseButtonStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Ellipse x:Name="ellipse" Fill="white" Width="30" Height="30" Stroke="#303EFF" StrokeThickness="2"/>
+                            <TextBlock x:Name="text" Text="X" Foreground="Transparent" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="ellipse" Storyboard.TargetProperty="(Ellipse.Stroke).(SolidColorBrush.Color)" To="#161928" Duration="0:0:0.2"/>
+                                            <ColorAnimation Storyboard.TargetName="text" Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)" To="#161928" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="ellipse" Storyboard.TargetProperty="(Ellipse.Stroke).(SolidColorBrush.Color)" To="#303EFF" Duration="0:0:0.2"/>
+                                            <ColorAnimation Storyboard.TargetName="text" Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)" To="Transparent" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ellipse" Property="Fill" Value="#0066ff"/>
+                                <Setter TargetName="text" Property="Foreground" Value="#ffffff"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="Height" Value="30"/>
+        </Style>
+
+        <!-- Animation for the Welcome text -->
+        <Storyboard x:Key="WelcomeTextAnimation">
+            <DoubleAnimation Storyboard.TargetName="WelcomeText"
+                             Storyboard.TargetProperty="Opacity"
+                             From="0" To="1"
+                             Duration="0:0:1.5"
+                             AutoReverse="False" />
+        </Storyboard>
+        
+        
+    </Window.Resources>
+
+    <Border CornerRadius="15" BorderBrush="Transparent" BorderThickness="1">
+        <Grid>
+            <!-- Split into two columns -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Left side with image and welcome text -->
+            <Border Grid.Column="0" Background="#EAE8F2" CornerRadius="15,0,0,15" ClipToBounds="True" Grid.ColumnSpan="2" Margin="0,0,449,0">
+                <Grid>
+                    <MediaElement x:Name="BackgroundVideo"
+              Source="liquid1.mp4"
+              Stretch="UniformToFill"
+              LoadedBehavior="Manual"
+              UnloadedBehavior="Stop"
+              IsMuted="True"
+              MediaEnded="BackgroundVideo_MediaEnded" />
+
+
+
+                    <!-- Приветственный текст на русском, выровненный по левому краю, с двумя строками, отрегулированный размер и позиция -->
+                    <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center" Margin="50,0,0,150">
+                        <TextBlock x:Name="WelcomeText" Text="Добро" 
+                                   FontSize="70" FontWeight="Bold" Foreground="White" 
+                                   Opacity="0">
+                            <TextBlock.RenderTransform>
+                                <TranslateTransform x:Name="WelcomeTextTransform" />
+                            </TextBlock.RenderTransform>
+                        </TextBlock>
+                        <TextBlock x:Name="WelcomeText2" Text="Пожаловать ;)" 
+                                   FontSize="70" FontWeight="Bold" Foreground="White" 
+                                   Opacity="0" Margin="0,-15,0,0">
+                            <TextBlock.RenderTransform>
+                                <TranslateTransform x:Name="WelcomeText2Transform" />
+                            </TextBlock.RenderTransform>
+                        </TextBlock>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Right side with white background -->
+            <Border Grid.Column="1" Background="White" CornerRadius="0,15,15,150" Padding="30" Margin="20,0,0,0">
+                <!-- Center content inside the right block -->
+                <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Center" MaxWidth="500">
+
+                        <!-- Smaller left-aligned "Авторизация" text -->
+                        <TextBlock Text="Авторизация" FontSize="50" FontWeight="Bold" Foreground="#1A1B1D" Margin="0,0,0,20" TextAlignment="Left" />
+
+                        <!-- Semi-transparent additional text -->
+                        <TextBlock Text="С возвращением! Пожалуйста, авторизуйтесь в аккаунт"
+                                   FontSize="17" Foreground="#1A1B1D" Opacity="0.6" 
+                                   Margin="0,0,0,60" TextAlignment="Left"
+                                   TextWrapping="Wrap" MaxWidth="500" />
+
+                        <!-- Larger margins for the fields -->
+                        <StackPanel Margin="0,10,0,10">
+                            <TextBlock Text="Введите логин" FontSize="19" FontWeight="SemiBold" Opacity="0.8" Foreground="#1A1B1D" Margin="0,0,0,10"/>
+                            <TextBox x:Name="Username" Width="430" Height="50" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="" Margin="0,0,0,20"/>
+                        </StackPanel>
+
+                        <StackPanel Margin="0,10,0,10">
+                            <TextBlock Text="Введите пароль" FontSize="19" Opacity="0.8" FontWeight="SemiBold" Foreground="#1A1B1D" Margin="0,0,0,10"/>
+                            <PasswordBox x:Name="Password" Width="430" Height="50" VerticalContentAlignment="Center" Style="{StaticResource RoundedPasswordBoxStyle}" Margin="0,0,0,20"/>
+                        </StackPanel>
+
+                        <!-- Taller and larger login button -->
+                        <Button Content="Вход" Width="430" Height="70" FontSize="19" FontWeight="SemiBold" Style="{StaticResource RoundedButtonStyle}" Margin="0,40,0,0" Click="LoginButton_Click"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <!-- Close button on the right block with margins -->
+            <Button Style="{StaticResource CloseButtonStyle}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10" Click="CloseButton_Click" Grid.Column="1"/>
+        </Grid>
+    </Border>
+
+    <!-- Trigger the animation at window load -->
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="Window.Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="WelcomeText"
+                                     Storyboard.TargetProperty="Opacity"
+                                     From="0" To="1" Duration="0:0:1.5" />
+                    <DoubleAnimation Storyboard.TargetName="WelcomeText2"
+                                     Storyboard.TargetProperty="Opacity"
+                                     From="0" To="1" Duration="0:0:1.5" BeginTime="0:0:0.5" />
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </Window.Triggers>
+</Window>
